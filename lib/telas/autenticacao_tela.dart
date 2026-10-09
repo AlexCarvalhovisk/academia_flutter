@@ -1,5 +1,8 @@
+import 'package:academia_flutter/_comum/meu_snackbar.dart';
 import 'package:academia_flutter/_comum/minhas_cores.dart';
 import 'package:academia_flutter/componentes/decoracao_campo_autenticacao.dart';
+import 'package:academia_flutter/servicos/autenticacao_servico.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class AutenticacaoTela extends StatefulWidget {
@@ -12,6 +15,13 @@ class AutenticacaoTela extends StatefulWidget {
 class _AutenticacaoTelaState extends State<AutenticacaoTela> {
   bool queroEntrar = true;
   final _formKey = GlobalKey<FormState>();
+
+  //Aqui são os controladores dos campos do fomulário.
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _senhaController = TextEditingController();
+  final TextEditingController _nomeController = TextEditingController();
+
+  AutenticacaoServico _autenServico = AutenticacaoServico();
 
   @override
   Widget build(BuildContext context) {
@@ -54,15 +64,18 @@ class _AutenticacaoTelaState extends State<AutenticacaoTela> {
                       ),
                       const SizedBox(height: 32),
                       TextFormField(
-                        decoration: getAuthenticationInputDecoration("E-mail: "),
-                        validator: (String ? value) {
-                          if(value == null){
+                        controller: _emailController,
+                        decoration: getAuthenticationInputDecoration(
+                          "E-mail: ",
+                        ),
+                        validator: (String? value) {
+                          if (value == null) {
                             return "O e-mail não pode ser vazio.";
                           }
-                          if(value.length < 5){
+                          if (value.length < 5) {
                             return "O e-mail é muito curto!";
                           }
-                          if(!value.contains("@")){
+                          if (!value.contains("@")) {
                             return "Não é um e-mail válido!";
                           }
                           return null;
@@ -70,13 +83,14 @@ class _AutenticacaoTelaState extends State<AutenticacaoTela> {
                       ),
                       const SizedBox(height: 8),
                       TextFormField(
+                        controller: _senhaController,
                         decoration: getAuthenticationInputDecoration("Senha: "),
                         obscureText: true,
-                        validator: (String ? value) {
-                          if(value == null){
+                        validator: (String? value) {
+                          if (value == null) {
                             return "A senha não pode ser vazia.";
                           }
-                          if(value.length < 3){
+                          if (value.length < 3) {
                             return "A senha é muito curta!";
                           }
                           return null;
@@ -88,13 +102,15 @@ class _AutenticacaoTelaState extends State<AutenticacaoTela> {
                         child: Column(
                           children: [
                             TextFormField(
-                              decoration: getAuthenticationInputDecoration("Confirme a senha."),
+                              decoration: getAuthenticationInputDecoration(
+                                "Confirme a senha.",
+                              ),
                               obscureText: true,
-                              validator: (String ? value) {
-                                if(value == null){
+                              validator: (String? value) {
+                                if (value == null) {
                                   return "A confirmação de senha não pode ser vazia.";
                                 }
-                                if(value.length < 3){
+                                if (value.length < 3) {
                                   return "A confirmação de senha é muito curta!";
                                 }
                                 return null;
@@ -102,12 +118,15 @@ class _AutenticacaoTelaState extends State<AutenticacaoTela> {
                             ),
                             const SizedBox(height: 8),
                             TextFormField(
-                              decoration: getAuthenticationInputDecoration("Nome: "),
-                              validator: (String ? value) {
-                                if(value == null){
+                              controller: _nomeController,
+                              decoration: getAuthenticationInputDecoration(
+                                "Nome: ",
+                              ),
+                              validator: (String? value) {
+                                if (value == null) {
                                   return "O nome não pode ser vazio.";
                                 }
-                                if(value.length < 2){
+                                if (value.length < 2) {
                                   return "O nome é muito curto!";
                                 }
                                 return null;
@@ -146,10 +165,37 @@ class _AutenticacaoTelaState extends State<AutenticacaoTela> {
       ),
     );
   }
-  botaoPrincipalClicado(){
-    if(_formKey.currentState!.validate()){
-      print("Formulário válido!");
-    }else{
+
+  botaoPrincipalClicado() {
+    String nome = _nomeController.text;
+    String email = _emailController.text;
+    String senha = _senhaController.text;
+
+    if (_formKey.currentState!.validate()) {
+      if (queroEntrar) {
+        print("Entrada validada!");
+      } else {
+        print("Cadastro validado");
+        print(
+          "${_emailController.text},${_senhaController.text}, ${_nomeController.text}",
+        );
+        _autenServico
+            .cadastrarUsuario(nome: nome, email: email, senha: senha)
+            .then((String? erro) {
+              if (erro != null) {
+                //Voltou com erro.
+                mostrarSnackBar(context: context, texto: erro);
+              } else {
+                //Deu certo.
+                mostrarSnackBar(
+                  context: context,
+                  texto: "Cadastro efetuado com sucesso!",
+                  isErro: false,
+                );
+              }
+            });
+      }
+    } else {
       print("Formulário inválido!");
     }
   }
