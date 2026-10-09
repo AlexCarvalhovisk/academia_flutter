@@ -146,7 +146,4 @@ Este projeto faz parte da minha jornada prática de aprofundamento em **Dart, Fl
 
 ## 🎓 Agradecimentos
 
-Este projeto foi desenvolvido aplicando os conceitos e boas práticas ensinados pelo **Professor Ricarth Lima**, profissional em desenvolvimento Mobile de extrema relevância no YouTube.
----
-
-Desenvolvido com Flutter 💙
+Este projeto foi desenvolvido aplicando os conceitos e boas práticas ensinados pelo **Professor Ricarth Lima**, profissional em desenvolvimento Mobile de extrema relevância no YouTube. 💙
