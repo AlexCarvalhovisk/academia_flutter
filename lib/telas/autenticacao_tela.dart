@@ -174,6 +174,11 @@ class _AutenticacaoTelaState extends State<AutenticacaoTela> {
     if (_formKey.currentState!.validate()) {
       if (queroEntrar) {
         print("Entrada validada!");
+        _autenServico.logarUsuarios(email: email, senha: senha).then((String? erro){
+          if(erro != null){
+            mostrarSnackBar(context: context, texto: erro);
+          }
+        });
       } else {
         print("Cadastro validado");
         print(
@@ -185,13 +190,6 @@ class _AutenticacaoTelaState extends State<AutenticacaoTela> {
               if (erro != null) {
                 //Voltou com erro.
                 mostrarSnackBar(context: context, texto: erro);
-              } else {
-                //Deu certo.
-                mostrarSnackBar(
-                  context: context,
-                  texto: "Cadastro efetuado com sucesso!",
-                  isErro: false,
-                );
               }
             });
       }
